@@ -3,7 +3,7 @@ const { v4: uuid } = require('uuid')
 const { validationResult } = require('express-validator')
 const User = require('../models/users')
 
-const DUMMY_USERS = [
+const DUMMY_USERS = [ 
     {
         id: 'u1',
         name: 'Galih A',
@@ -50,7 +50,7 @@ const signup = async (req, res, next) => {
     const createdUser = new User({
         name,
         email,
-        image: 'https://lh5.googleusercontent.com/p/AF1QipNiGCxCLKMd4PLBzT0tnVi3sLduC_eEYRsbOhd8=w408-h244-k-no',
+        image: req.file.path,
         password,
         places: []
     })
@@ -78,7 +78,7 @@ const login = async (req, res, next) => {
         return next(new HttpError('Could not recognized email and password !', 422))
     }
 
-    res.json({message: 'logged in'})
+    res.json({message: 'logged in', user: existingUser.toObject({getters: true})})
 }
 
 exports.getUsers = getUsers

@@ -1,3 +1,4 @@
+const fs = require('fs')
 // const {v4: uuid} = require('uuid')
 const HttpError = require('../models/http-error')
 const { validationResult } = require('express-validator')
@@ -85,7 +86,7 @@ const createPlace = async (req, res, next) => {
         description,
         location: coordinates,
         address,
-        image: 'https://lh5.googleusercontent.com/p/AF1QipNiGCxCLKMd4PLBzT0tnVi3sLduC_eEYRsbOhd8=w408-h244-k-no',
+        image: req.file.path,
         creator 
     })
 
@@ -157,6 +158,8 @@ const deletePlace = async (req, res, next) => {
 
     if(!place) return next(new HttpError('Could not find place with the given Id', 404))
     
+    const imagePath = place.image;
+
     try {
         const sess = await mongoose.startSession()
         sess.startTransaction()
@@ -168,6 +171,8 @@ const deletePlace = async (req, res, next) => {
         const error = new HttpError('Something went wrong, could not delete place :(', 500)
         return next(error)
     }
+
+    fs.unlink(imagePath, err => console.log(err))
 
     res.status(200).json({message: 'Data succesfully removed !'})
 }

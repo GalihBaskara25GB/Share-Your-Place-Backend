@@ -12,7 +12,8 @@ const getCoordsForAddress = async (address) => {
     const params = {
         access_key: API_KEY,
         query: address,
-        output: 'json'
+        output: 'json',
+        limit: 1
     }
     const response = await axios.get(
         'http://api.positionstack.com/v1/forward',
@@ -24,11 +25,14 @@ const getCoordsForAddress = async (address) => {
         throw error
     }
     
-    const coordinates = {
-        lat: data.data[1].latitude,
-        lng: data.data[1].longitude
+    if(data.data[0] === undefined) {
+        throw new HttpError('Could not find place, please give correct Address', 404)
     }
     
+    const coordinates = {
+        lat: data.data[0].latitude,
+        lng: data.data[0].longitude
+    }
     return coordinates
 }
 
